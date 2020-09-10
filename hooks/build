@@ -1,0 +1,22 @@
+#!/bin/bash
+set -eu
+
+if [ -z "${DOCKERFILE_PATH+UNDEF}" ]; then
+    DOCKERFILE_PATH_ARG=""
+else
+    DOCKERFILE_PATH_ARG="-f $DOCKERFILE_PATH"
+fi
+
+case ${DOCKER_TAG} in 
+  debian-10.*)
+    CLANGD=clangd DIST_RELEASE="buster" ;;
+  *)
+    CLANGD="" DIST_RELEASE="" ;;
+esac
+
+docker build \
+  --build-arg BASE_IMAGE=docker.io/pizzafactory0contorno/piatto:${DOCKER_TAG} \
+  --build-arg CLANGD=${CLANGD} \
+  --build-arg DIST_RELEASE=${DIST_RELEASE} \
+  ${DOCKERFILE_PATH_ARG} -t $IMAGE_NAME .
+
